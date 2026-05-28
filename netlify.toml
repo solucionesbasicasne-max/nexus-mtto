@@ -1,0 +1,8 @@
+[build]
+  command = "mkdir -p src && for f in main.jsx App.jsx index.css; do [ -f \"$f\" ] && mv \"$f\" src/ 2>/dev/null || true; done && for d in components pages api hooks lib utils; do [ -d \"$d\" ] && [ ! -d \"src/$d\" ] && mv \"$d\" src/ 2>/dev/null || true; done && npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

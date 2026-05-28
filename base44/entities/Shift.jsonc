@@ -1,0 +1,55 @@
+{
+  "name": "Shift",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del turno (ej: Turno Matutino)"
+    },
+    "code": {
+      "type": "string",
+      "description": "C\u00f3digo corto (ej: T1, MAT)"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Hora de inicio (HH:mm)"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "Hora de fin (HH:mm)"
+    },
+    "daily_hours": {
+      "type": "number",
+      "description": "Horas programadas por d\u00eda"
+    },
+    "work_days": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "D\u00edas laborales (0=Dom, 1=Lun, ..., 6=S\u00e1b)"
+    },
+    "rest_days": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "D\u00edas de descanso (0=Dom, 1=Lun, ..., 6=S\u00e1b)"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color representativo del turno (hex)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Turno activo"
+    }
+  },
+  "required": [
+    "name",
+    "start_time",
+    "end_time",
+    "daily_hours"
+  ]
+}

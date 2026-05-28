@@ -1,0 +1,86 @@
+{
+  "name": "SparePart",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la refacci\u00f3n / despiece"
+    },
+    "part_number": {
+      "type": "string",
+      "description": "N\u00famero de parte"
+    },
+    "component_id": {
+      "type": "string",
+      "description": "ID del componente al que pertenece"
+    },
+    "system_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Mec\u00e1nica",
+        "El\u00e9ctrica",
+        "Electr\u00f3nica",
+        "Hidr\u00e1ulica",
+        "Neum\u00e1tica",
+        "Consumible",
+        "Otro"
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unidad de medida",
+      "default": "Pieza"
+    },
+    "stock_current": {
+      "type": "number",
+      "description": "Stock actual",
+      "default": 0
+    },
+    "stock_min": {
+      "type": "number",
+      "description": "Stock m\u00ednimo (alerta)",
+      "default": 1
+    },
+    "stock_max": {
+      "type": "number",
+      "description": "Stock m\u00e1ximo"
+    },
+    "unit_cost": {
+      "type": "number",
+      "description": "Costo unitario",
+      "default": 0
+    },
+    "location_storage": {
+      "type": "string",
+      "description": "Ubicaci\u00f3n en almac\u00e9n (anaquel, caja)"
+    },
+    "supplier": {
+      "type": "string",
+      "description": "Proveedor principal"
+    },
+    "lead_time_days": {
+      "type": "number",
+      "description": "Tiempo de entrega en d\u00edas"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "part_number"
+  ]
+}

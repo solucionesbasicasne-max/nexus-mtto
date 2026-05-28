@@ -1,0 +1,39 @@
+{
+  "name": "Site",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del sitio / planta"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID de la empresa"
+    },
+    "code": {
+      "type": "string",
+      "description": "C\u00f3digo del sitio"
+    },
+    "address": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string",
+      "default": "M\u00e9xico"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "company_id"
+  ]
+}

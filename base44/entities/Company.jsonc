@@ -1,0 +1,38 @@
+{
+  "name": "Company",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la empresa"
+    },
+    "rfc": {
+      "type": "string",
+      "description": "RFC / Identificaci\u00f3n fiscal"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industria / Giro"
+    },
+    "address": {
+      "type": "string",
+      "description": "Direcci\u00f3n"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

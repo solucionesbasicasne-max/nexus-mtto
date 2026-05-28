@@ -1,0 +1,99 @@
+{
+  "name": "Service",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del servicio"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "Mantenimiento",
+        "Inspecci\u00f3n",
+        "Instalaci\u00f3n",
+        "Reparaci\u00f3n",
+        "Limpieza",
+        "Calibraci\u00f3n",
+        "Otro"
+      ],
+      "description": "Tipo de servicio"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Proveedor / empresa"
+    },
+    "contact_name": {
+      "type": "string",
+      "description": "Nombre de contacto"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "wo_id": {
+      "type": "string",
+      "description": "ID de la orden de trabajo vinculada"
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "completion_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "estimated_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "actual_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pendiente",
+        "En Proceso",
+        "Completado",
+        "Cancelado"
+      ],
+      "default": "Pendiente"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "Cr\u00edtica",
+        "Alta",
+        "Media",
+        "Baja"
+      ],
+      "default": "Media"
+    },
+    "description": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "invoice_number": {
+      "type": "string",
+      "description": "No. de factura"
+    },
+    "warranty_months": {
+      "type": "number",
+      "description": "Meses de garant\u00eda"
+    }
+  },
+  "required": [
+    "name",
+    "service_type",
+    "provider"
+  ]
+}

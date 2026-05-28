@@ -1,0 +1,63 @@
+{
+  "name": "MaintenancePlan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del plan"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n general"
+    },
+    "maintenance_type": {
+      "type": "string",
+      "enum": [
+        "Preventivo",
+        "Predictivo",
+        "Correctivo Est\u00e1ndar"
+      ],
+      "description": "Tipo de mantenimiento"
+    },
+    "estimated_duration_hours": {
+      "type": "number",
+      "description": "Duraci\u00f3n estimada en horas"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "Cr\u00edtica",
+        "Alta",
+        "Media",
+        "Baja"
+      ],
+      "default": "Media"
+    },
+    "asset_type": {
+      "type": "string",
+      "description": "Tipo de activo (para reutilizaci\u00f3n)"
+    },
+    "requires_shutdown": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u00bfRequiere paro?"
+    },
+    "associated_risk": {
+      "type": "string",
+      "enum": [
+        "Alto",
+        "Medio",
+        "Bajo"
+      ],
+      "default": "Bajo"
+    },
+    "safety_instructions": {
+      "type": "string",
+      "description": "Instrucciones de seguridad"
+    }
+  },
+  "required": [
+    "name",
+    "maintenance_type"
+  ]
+}

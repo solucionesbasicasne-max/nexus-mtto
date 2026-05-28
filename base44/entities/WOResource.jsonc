@@ -1,0 +1,32 @@
+{
+  "name": "WOResource",
+  "type": "object",
+  "properties": {
+    "wo_id": {
+      "type": "string",
+      "description": "ID de la orden de trabajo"
+    },
+    "resource_type": {
+      "type": "string",
+      "enum": [
+        "Mano de Obra",
+        "Servicio",
+        "Refacci\u00f3n"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "actual_quantity": {
+      "type": "number"
+    },
+    "actual_cost": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "wo_id",
+    "resource_type",
+    "description"
+  ]
+}

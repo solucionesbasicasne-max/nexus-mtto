@@ -1,0 +1,53 @@
+{
+  "name": "AssetSystem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del sistema"
+    },
+    "asset_id": {
+      "type": "string",
+      "description": "ID del activo principal"
+    },
+    "process_id": {
+      "type": "string"
+    },
+    "location_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "system_type": {
+      "type": "string",
+      "enum": [
+        "Mec\u00e1nico",
+        "El\u00e9ctrico",
+        "Hidr\u00e1ulico",
+        "Neum\u00e1tico",
+        "Control",
+        "Refrigeraci\u00f3n",
+        "Lubricaci\u00f3n",
+        "Otro"
+      ]
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "asset_id"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "PlanActivity",
+  "type": "object",
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "ID del plan de mantenimiento"
+    },
+    "sequence": {
+      "type": "number",
+      "description": "Orden de secuencia"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n de la actividad"
+    },
+    "estimated_time_minutes": {
+      "type": "number",
+      "description": "Tiempo estimado en minutos"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "Inspecci\u00f3n",
+        "Lubricaci\u00f3n",
+        "Ajuste",
+        "Reemplazo",
+        "Limpieza",
+        "Otro"
+      ]
+    },
+    "checklist_items": {
+      "type": "string",
+      "description": "Items del checklist separados por l\u00ednea"
+    }
+  },
+  "required": [
+    "plan_id",
+    "description"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Process",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del proceso"
+    },
+    "location_id": {
+      "type": "string",
+      "description": "ID de la ubicaci\u00f3n"
+    },
+    "business_unit_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "process_type": {
+      "type": "string",
+      "enum": [
+        "Producci\u00f3n",
+        "Envasado",
+        "Almac\u00e9n",
+        "Servicios",
+        "Utilidades",
+        "Otro"
+      ]
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "location_id"
+  ]
+}

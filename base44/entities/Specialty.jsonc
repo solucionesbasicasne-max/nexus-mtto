@@ -1,0 +1,30 @@
+{
+  "name": "Specialty",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la especialidad"
+    },
+    "code": {
+      "type": "string",
+      "description": "C\u00f3digo de la especialidad"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n"
+    },
+    "category": {
+      "type": "string",
+      "description": "Categor\u00eda"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Activo"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

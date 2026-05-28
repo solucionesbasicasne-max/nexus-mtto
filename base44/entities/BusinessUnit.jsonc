@@ -1,0 +1,35 @@
+{
+  "name": "BusinessUnit",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la unidad de negocio / \u00e1rea"
+    },
+    "site_id": {
+      "type": "string",
+      "description": "ID del sitio"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "manager": {
+      "type": "string",
+      "description": "Responsable"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "site_id"
+  ]
+}

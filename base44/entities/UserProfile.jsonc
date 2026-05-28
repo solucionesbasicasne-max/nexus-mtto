@@ -1,0 +1,59 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID del usuario (base44 user id)"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email del usuario"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Nombre para mostrar"
+    },
+    "username": {
+      "type": "string",
+      "description": "Nombre de usuario para login"
+    },
+    "app_password": {
+      "type": "string",
+      "description": "Contrase\u00f1a de acceso a la app"
+    },
+    "app_role": {
+      "type": "string",
+      "enum": [
+        "Admin",
+        "Supervisor",
+        "T\u00e9cnico",
+        "Visualizador"
+      ],
+      "default": "T\u00e9cnico",
+      "description": "Rol en la aplicaci\u00f3n"
+    },
+    "allowed_pages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "P\u00e1ginas permitidas (vac\u00edo = todas)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "Vinculaci\u00f3n con empleado"
+    },
+    "avatar_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email",
+    "app_role"
+  ]
+}

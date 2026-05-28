@@ -1,0 +1,45 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo de la notificaci\u00f3n"
+    },
+    "message": {
+      "type": "string",
+      "description": "Mensaje de la notificaci\u00f3n"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "error",
+        "success"
+      ],
+      "default": "info"
+    },
+    "entity_type": {
+      "type": "string",
+      "description": "Tipo de entidad relacionada"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID de la entidad relacionada"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    },
+    "link": {
+      "type": "string",
+      "description": "Ruta de navegaci\u00f3n"
+    }
+  },
+  "required": [
+    "title",
+    "message",
+    "type"
+  ]
+}

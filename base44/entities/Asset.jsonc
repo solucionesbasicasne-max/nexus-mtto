@@ -1,0 +1,83 @@
+{
+  "name": "Asset",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del activo principal"
+    },
+    "code": {
+      "type": "string",
+      "description": "C\u00f3digo del activo"
+    },
+    "process_id": {
+      "type": "string",
+      "description": "ID del proceso"
+    },
+    "location_id": {
+      "type": "string"
+    },
+    "business_unit_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Mec\u00e1nico",
+        "El\u00e9ctrico",
+        "Electr\u00f3nico",
+        "Hidr\u00e1ulico",
+        "Neum\u00e1tico",
+        "Otro"
+      ]
+    },
+    "installation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Operativo",
+        "En Mantenimiento",
+        "Fuera de Servicio",
+        "Baja"
+      ],
+      "default": "Operativo"
+    },
+    "manufacturer": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "serial_number": {
+      "type": "string"
+    },
+    "useful_life_years": {
+      "type": "number"
+    },
+    "criticality": {
+      "type": "string",
+      "enum": [
+        "Alta",
+        "Media",
+        "Baja"
+      ],
+      "default": "Media"
+    },
+    "image_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "code"
+  ]
+}

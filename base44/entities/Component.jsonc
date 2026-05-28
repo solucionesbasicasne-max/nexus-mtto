@@ -1,0 +1,66 @@
+{
+  "name": "Component",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del componente"
+    },
+    "system_id": {
+      "type": "string",
+      "description": "ID del sistema"
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "process_id": {
+      "type": "string"
+    },
+    "location_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "component_type": {
+      "type": "string",
+      "enum": [
+        "Motor",
+        "Bomba",
+        "V\u00e1lvula",
+        "Sensor",
+        "Actuador",
+        "Reductor",
+        "Rodamiento",
+        "Correa",
+        "Otro"
+      ]
+    },
+    "manufacturer": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "serial_number": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "system_id"
+  ]
+}

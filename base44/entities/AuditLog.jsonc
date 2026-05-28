@@ -1,0 +1,40 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "entity_type": {
+      "type": "string",
+      "description": "Tipo de entidad afectada"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID del registro afectado"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "Crear",
+        "Actualizar",
+        "Eliminar"
+      ],
+      "description": "Acci\u00f3n realizada"
+    },
+    "field_changed": {
+      "type": "string",
+      "description": "Campo modificado"
+    },
+    "old_value": {
+      "type": "string"
+    },
+    "new_value": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity_type",
+    "action"
+  ]
+}

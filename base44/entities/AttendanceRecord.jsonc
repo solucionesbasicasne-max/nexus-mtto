@@ -1,0 +1,43 @@
+{
+  "name": "AttendanceRecord",
+  "type": "object",
+  "properties": {
+    "employee_id": {
+      "type": "string",
+      "description": "ID del empleado"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha"
+    },
+    "check_in": {
+      "type": "string",
+      "description": "Hora de entrada (HH:mm)"
+    },
+    "check_out": {
+      "type": "string",
+      "description": "Hora de salida (HH:mm)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Asistencia",
+        "Retardo",
+        "Falta",
+        "Justificada"
+      ],
+      "default": "Asistencia",
+      "description": "Estado de asistencia"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas u observaciones"
+    }
+  },
+  "required": [
+    "employee_id",
+    "date",
+    "status"
+  ]
+}

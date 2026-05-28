@@ -1,0 +1,26 @@
+{
+  "name": "PlanResourceService",
+  "type": "object",
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "ID del plan"
+    },
+    "external_service": {
+      "type": "string",
+      "description": "Servicio externo"
+    },
+    "supplier": {
+      "type": "string",
+      "description": "Proveedor"
+    },
+    "estimated_cost": {
+      "type": "number",
+      "description": "Costo estimado"
+    }
+  },
+  "required": [
+    "plan_id",
+    "external_service"
+  ]
+}

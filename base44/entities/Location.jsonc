@@ -1,0 +1,42 @@
+{
+  "name": "Location",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la ubicaci\u00f3n"
+    },
+    "business_unit_id": {
+      "type": "string",
+      "description": "ID de la unidad de negocio"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "plant": {
+      "type": "string",
+      "description": "Planta"
+    },
+    "area": {
+      "type": "string",
+      "description": "\u00c1rea"
+    },
+    "line": {
+      "type": "string",
+      "description": "L\u00ednea"
+    },
+    "code": {
+      "type": "string"
+    },
+    "parent_location_id": {
+      "type": "string",
+      "description": "ID ubicaci\u00f3n padre (jerarqu\u00eda)"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

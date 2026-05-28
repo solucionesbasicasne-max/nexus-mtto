@@ -1,0 +1,28 @@
+{
+  "name": "WOActivity",
+  "type": "object",
+  "properties": {
+    "wo_id": {
+      "type": "string",
+      "description": "ID de la orden de trabajo"
+    },
+    "description": {
+      "type": "string"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "actual_time_minutes": {
+      "type": "number",
+      "description": "Tiempo real en minutos"
+    },
+    "sequence": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "wo_id",
+    "description"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "PlanResourcePart",
+  "type": "object",
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "ID del plan"
+    },
+    "part_name": {
+      "type": "string",
+      "description": "Nombre de refacci\u00f3n"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Cantidad"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unidad de medida"
+    },
+    "estimated_cost": {
+      "type": "number",
+      "description": "Costo estimado"
+    }
+  },
+  "required": [
+    "plan_id",
+    "part_name"
+  ]
+}

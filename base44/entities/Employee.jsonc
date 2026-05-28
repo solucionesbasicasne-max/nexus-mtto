@@ -1,0 +1,89 @@
+{
+  "name": "Employee",
+  "type": "object",
+  "properties": {
+    "employee_id": {
+      "type": "string",
+      "description": "ID \u00fanico del empleado (autogenerado)"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "Nombre completo"
+    },
+    "position": {
+      "type": "string",
+      "description": "Puesto"
+    },
+    "department": {
+      "type": "string",
+      "description": "\u00c1rea / Departamento"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Tel\u00e9fono"
+    },
+    "email": {
+      "type": "string",
+      "description": "Correo electr\u00f3nico"
+    },
+    "hire_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de ingreso"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Activo",
+        "Inactivo"
+      ],
+      "default": "Activo",
+      "description": "Estatus del empleado"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "URL de la fotograf\u00eda del empleado"
+    },
+    "specialty_id": {
+      "type": "string",
+      "description": "ID de especialidad"
+    },
+    "shift_id": {
+      "type": "string",
+      "description": "ID del turno asignado"
+    },
+    "worker_type": {
+      "type": "string",
+      "enum": [
+        "Interno",
+        "Externo"
+      ],
+      "default": "Interno"
+    },
+    "hourly_rate": {
+      "type": "number",
+      "description": "Costo por hora"
+    },
+    "availability": {
+      "type": "string",
+      "enum": [
+        "Disponible",
+        "Ocupado",
+        "Vacaciones",
+        "Baja"
+      ],
+      "default": "Disponible"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas adicionales"
+    }
+  },
+  "required": [
+    "full_name",
+    "position",
+    "department",
+    "hire_date",
+    "photo_url"
+  ]
+}

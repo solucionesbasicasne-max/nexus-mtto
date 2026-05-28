@@ -1,0 +1,88 @@
+{
+  "name": "PreventiveMaintenance",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del MP"
+    },
+    "description": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": "string",
+      "description": "ID del activo"
+    },
+    "location_id": {
+      "type": "string",
+      "description": "ID de ubicaci\u00f3n"
+    },
+    "plan_id": {
+      "type": "string",
+      "description": "ID del plan activo actual (compatibilidad)"
+    },
+    "plan_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista ordenada de IDs de planes (secuencia rotativa)"
+    },
+    "current_plan_sequence": {
+      "type": "number",
+      "default": 1,
+      "description": "N\u00famero de secuencia del plan actual (1, 2, 3...)"
+    },
+    "plan_sequence": {
+      "type": "number",
+      "description": "Secuencia del plan (legacy)"
+    },
+    "frequency_days": {
+      "type": "number",
+      "description": "Frecuencia en d\u00edas"
+    },
+    "generation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "requested_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "next_mp_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Pr\u00f3xima fecha MP (auto calculada)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Activo",
+        "Inactivo",
+        "Pausado"
+      ],
+      "default": "Activo"
+    },
+    "schedule_type": {
+      "type": "string",
+      "enum": [
+        "Manual",
+        "Autom\u00e1tico"
+      ],
+      "default": "Manual"
+    },
+    "last_wo_id": {
+      "type": "string",
+      "description": "\u00daltima OT generada"
+    },
+    "execution_indicator": {
+      "type": "number",
+      "description": "Porcentaje de ejecuci\u00f3n"
+    }
+  },
+  "required": [
+    "name",
+    "asset_id",
+    "frequency_days"
+  ]
+}

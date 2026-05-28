@@ -1,0 +1,36 @@
+{
+  "name": "WorkOrderStatusHistory",
+  "type": "object",
+  "properties": {
+    "wo_id": {
+      "type": "string",
+      "description": "ID de la orden de trabajo"
+    },
+    "from_status": {
+      "type": "string",
+      "description": "Estado anterior"
+    },
+    "to_status": {
+      "type": "string",
+      "description": "Nuevo estado"
+    },
+    "changed_by": {
+      "type": "string",
+      "description": "Usuario que realiz\u00f3 el cambio"
+    },
+    "changed_at": {
+      "type": "string",
+      "description": "Fecha y hora del cambio"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas del cambio"
+    }
+  },
+  "required": [
+    "wo_id",
+    "to_status",
+    "changed_by",
+    "changed_at"
+  ]
+}

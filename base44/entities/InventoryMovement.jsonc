@@ -1,0 +1,63 @@
+{
+  "name": "InventoryMovement",
+  "type": "object",
+  "properties": {
+    "spare_part_id": {
+      "type": "string",
+      "description": "ID de la refacci\u00f3n"
+    },
+    "movement_type": {
+      "type": "string",
+      "enum": [
+        "Entrada",
+        "Salida",
+        "Ajuste"
+      ],
+      "description": "Tipo de movimiento"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Cantidad del movimiento"
+    },
+    "quantity_before": {
+      "type": "number",
+      "description": "Stock antes del movimiento"
+    },
+    "quantity_after": {
+      "type": "number",
+      "description": "Stock despu\u00e9s del movimiento"
+    },
+    "unit_cost": {
+      "type": "number",
+      "description": "Costo unitario en el movimiento"
+    },
+    "total_cost": {
+      "type": "number",
+      "description": "Costo total del movimiento"
+    },
+    "wo_id": {
+      "type": "string",
+      "description": "OT asociada (salidas por consumo)"
+    },
+    "reference": {
+      "type": "string",
+      "description": "Referencia / Folio"
+    },
+    "supplier": {
+      "type": "string",
+      "description": "Proveedor (para entradas)"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "movement_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "spare_part_id",
+    "movement_type",
+    "quantity"
+  ]
+}

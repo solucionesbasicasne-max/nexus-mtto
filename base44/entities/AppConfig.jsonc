@@ -1,0 +1,22 @@
+{
+  "name": "AppConfig",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Clave \u00fanica de configuraci\u00f3n"
+    },
+    "value": {
+      "type": "string",
+      "description": "Valor de la configuraci\u00f3n"
+    },
+    "category": {
+      "type": "string",
+      "description": "Categor\u00eda: branding, company, login, roles"
+    }
+  },
+  "required": [
+    "key",
+    "value"
+  ]
+}

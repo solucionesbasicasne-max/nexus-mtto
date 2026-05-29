@@ -106,11 +106,16 @@ export default function QRAttendanceScanner() {
     queryKey: ['shifts'],
     queryFn: () => base44.entities.Shift.list(),
   });
-  const { data: todayRecords = [], refetch: refetchToday } = useQuery({
+  const { data: allAttendance = [], refetch: refetchToday } = useQuery({
     queryKey: ['attendance-today'],
-    queryFn: () => base44.entities.AttendanceRecord.filter({ date: format(new Date(), 'yyyy-MM-dd') }),
-    refetchInterval: 8000,
+    queryFn: () => base44.entities.AttendanceRecord.list('-created_date', 300),
+    refetchInterval: 6000,
+    staleTime: 0,
   });
+
+  // Filter locally using substring(0,10) to avoid timezone format mismatches
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const todayRecords = allAttendance.filter(r => String(r.date || '').substring(0, 10) === todayStr);
 
   // Clock ticker
   useEffect(() => {
@@ -121,8 +126,10 @@ export default function QRAttendanceScanner() {
   const createRecord = useMutation({
     mutationFn: (data) => base44.entities.AttendanceRecord.create(data),
     onSuccess: () => {
+      // Force immediate refetch so the list updates right away
       queryClient.invalidateQueries({ queryKey: ['attendance-today'] });
       queryClient.invalidateQueries({ queryKey: ['attendance'] });
+      refetchToday();
     },
   });
 
@@ -131,6 +138,7 @@ export default function QRAttendanceScanner() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['attendance-today'] });
       queryClient.invalidateQueries({ queryKey: ['attendance'] });
+      refetchToday();
     },
   });
 

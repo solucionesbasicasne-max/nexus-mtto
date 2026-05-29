@@ -40,12 +40,37 @@ function normalizeGoogleDriveUrl(url) {
 }
 
 /**
- * Normaliza recursivamente todas las URLs de Google Drive dentro de un objeto/arreglo de datos
+ * Normaliza un valor individual (URLs de Drive, fechas y horas de Google Sheets)
+ */
+function normalizeValue(val) {
+  if (val === null || val === undefined) return val;
+  if (typeof val === 'string') {
+    // 1. Normalizar URLs de Google Drive
+    let normalized = normalizeGoogleDriveUrl(val);
+    
+    // 2. Normalizar fechas (2026-05-28T00:00:00 -> 2026-05-28)
+    if (normalized.match(/^\d{4}-\d{2}-\d{2}T00:00:00$/) || normalized.match(/^\d{4}-\d{2}-\d{2}T00:00:00\.000Z$/)) {
+      return normalized.substring(0, 10);
+    }
+    
+    // 3. Normalizar horas (1899-12-30T14:40:00 -> 14:40)
+    if (normalized.startsWith('1899-12-30T') || normalized.startsWith('1900-01-01T')) {
+      const timeMatch = normalized.match(/T(\d{2}:\d{2})/);
+      if (timeMatch) return timeMatch[1];
+    }
+    
+    return normalized;
+  }
+  return val;
+}
+
+/**
+ * Normaliza recursivamente todos los valores dentro de un objeto/arreglo (URLs, fechas, horas)
  */
 function deepNormalizeUrls(obj) {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'string') {
-    return normalizeGoogleDriveUrl(obj);
+    return normalizeValue(obj);
   }
   if (Array.isArray(obj)) {
     return obj.map(deepNormalizeUrls);

@@ -55,6 +55,8 @@ export default function WorkOrderDetail() {
   const { data: assets = [] } = useQuery({ queryKey: ['assets'], queryFn: () => base44.entities.Asset.list() });
   const { data: locations = [] } = useQuery({ queryKey: ['locations'], queryFn: () => base44.entities.Location.list() });
   const { data: employees = [] } = useQuery({ queryKey: ['employees'], queryFn: () => base44.entities.Employee.list() });
+  const { data: spareParts = [] } = useQuery({ queryKey: ['spareParts'], queryFn: () => base44.entities.SparePart.list() });
+  const { data: services = [] } = useQuery({ queryKey: ['services'], queryFn: () => base44.entities.Service.list() });
   const { user: currentUser } = useAuth();
 
   const [elapsed, setElapsed] = useState(0);
@@ -654,18 +656,74 @@ export default function WorkOrderDetail() {
             {resourceForm.resource_type === 'Mano de Obra' ? (
               <div>
                 <Label>Técnico</Label>
-                <Select value={resourceForm.description} onValueChange={v => setResourceForm({...resourceForm, description: v})}>
+                <Select value={resourceForm.description} onValueChange={v => {
+                  const emp = employees.find(e => e.full_name === v);
+                  const rate = emp ? parseFloat(emp.hourly_rate || 0) : 0;
+                  const qty = resourceForm.actual_quantity || 1;
+                  setResourceForm({
+                    ...resourceForm,
+                    description: v,
+                    unit_cost: rate,
+                    actual_cost: qty * rate
+                  });
+                }}>
                   <SelectTrigger><SelectValue placeholder="Seleccionar técnico" /></SelectTrigger>
-                  <SelectContent>{employees.filter(e => e.status === 'Activo').map(e => <SelectItem key={e.id} value={e.full_name}>{e.full_name} — {e.position}</SelectItem>)}</SelectContent>
+                  <SelectContent>{employees.filter(e => e.status === 'Activo').map(e => <SelectItem key={e.id} value={e.full_name}>{e.full_name} — {e.position} {e.hourly_rate > 0 ? `($${e.hourly_rate}/h)` : ''}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             ) : resourceForm.resource_type === 'Servicio' ? (
-              <div><Label>Servicio / Proveedor *</Label><Input value={resourceForm.description} onChange={e => setResourceForm({...resourceForm, description: e.target.value})} placeholder="Ej: Empresa XYZ — Servicio de grúa" required /></div>
+              <div className="space-y-4">
+                <div>
+                  <Label>Seleccionar Servicio de Catálogo</Label>
+                  <Select value={resourceForm.description} onValueChange={v => {
+                    const serv = services.find(s => s.name === v || s.id === v);
+                    const cost = serv ? parseFloat(serv.estimated_cost || 0) : 0;
+                    const qty = resourceForm.actual_quantity || 1;
+                    setResourceForm({
+                      ...resourceForm,
+                      description: serv ? `${serv.provider} — ${serv.name}` : v,
+                      unit_cost: cost,
+                      actual_cost: qty * cost
+                    });
+                  }}>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar servicio" /></SelectTrigger>
+                    <SelectContent>
+                      {services.map(s => <SelectItem key={s.id} value={s.name}>{s.name} — {s.provider} {s.estimated_cost > 0 ? `($${s.estimated_cost})` : ''}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div><Label>Servicio / Proveedor *</Label><Input value={resourceForm.description} onChange={e => setResourceForm({...resourceForm, description: e.target.value})} placeholder="Ej: Empresa XYZ — Servicio de grúa" required /></div>
+              </div>
             ) : (
-              <div><Label>Refacción / Material *</Label><Input value={resourceForm.description} onChange={e => setResourceForm({...resourceForm, description: e.target.value})} placeholder="Ej: Rodamiento 6205, Filtro de aceite..." required /></div>
+              <div className="space-y-4">
+                <div>
+                  <Label>Seleccionar Refacción de Inventario</Label>
+                  <Select value={resourceForm.description} onValueChange={v => {
+                    const part = spareParts.find(p => p.name === v || p.id === v);
+                    const cost = part ? parseFloat(part.unit_cost || 0) : 0;
+                    const qty = resourceForm.actual_quantity || 1;
+                    setResourceForm({
+                      ...resourceForm,
+                      description: part ? part.name : v,
+                      unit_cost: cost,
+                      actual_cost: qty * cost
+                    });
+                  }}>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar refacción" /></SelectTrigger>
+                    <SelectContent>
+                      {spareParts.map(p => <SelectItem key={p.id} value={p.name}>{p.name} {p.part_number ? `(${p.part_number})` : ''} — Stock: {p.stock_current} {p.unit}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div><Label>Refacción / Material *</Label><Input value={resourceForm.description} onChange={e => setResourceForm({...resourceForm, description: e.target.value})} placeholder="Ej: Rodamiento 6205, Filtro de aceite..." required /></div>
+              </div>
             )}
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>Cantidad</Label><Input type="number" min="0" step="0.01" value={resourceForm.actual_quantity} onChange={e => setResourceForm({...resourceForm, actual_quantity: parseFloat(e.target.value)})} /></div>
+              <div><Label>Cantidad</Label><Input type="number" min="0" step="0.01" value={resourceForm.actual_quantity} onChange={e => {
+                const qty = parseFloat(e.target.value) || 0;
+                const cost = parseFloat(resourceForm.unit_cost || 0);
+                setResourceForm({...resourceForm, actual_quantity: qty, actual_cost: qty * cost});
+              }} /></div>
               <div><Label>Costo ($)</Label><Input type="number" min="0" step="0.01" value={resourceForm.actual_cost} onChange={e => setResourceForm({...resourceForm, actual_cost: parseFloat(e.target.value)})} /></div>
             </div>
             <div className="flex justify-end gap-2">

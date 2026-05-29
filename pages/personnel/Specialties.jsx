@@ -66,7 +66,10 @@ export default function Specialties() {
                   </div>
                   <div>
                     <p className="font-semibold">{s.name}</p>
-                    {s.code && <p className="text-xs font-mono text-muted-foreground">{s.code}</p>}
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {s.code && <p className="text-xs font-mono text-muted-foreground">{s.code}</p>}
+                      {s.hourly_rate > 0 && <Badge variant="secondary" className="text-[10px] py-0.5 px-1.5 bg-primary/10 text-primary border-none font-medium">${s.hourly_rate}/h</Badge>}
+                    </div>
                   </div>
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -101,6 +104,7 @@ export default function Specialties() {
             <div><Label>Código</Label><Input value={form.code || ''} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} placeholder="Ej. ELEC-01" /></div>
             <div><Label>Categoría</Label><Input value={form.category || ''} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} /></div>
             <div><Label>Descripción</Label><Textarea value={form.description || ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} /></div>
+            <div><Label>Costo por Hora ($)</Label><Input type="number" min="0" step="0.01" value={form.hourly_rate || ''} onChange={e => setForm(f => ({ ...f, hourly_rate: parseFloat(e.target.value) || 0 }))} placeholder="Ej. 150.00" /></div>
             <div className="flex items-center gap-3">
               <Switch checked={form.is_active !== false} onCheckedChange={v => setForm(f => ({ ...f, is_active: v }))} />
               <Label>Especialidad activa</Label>

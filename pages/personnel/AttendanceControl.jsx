@@ -47,18 +47,21 @@ export default function AttendanceControl() {
   const weekEnd = endOfWeek(baseDate, { weekStartsOn: 1 });
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  const getRecord = (empId, day) => records.find(r => r.employee_id === empId && r.date === format(day, 'yyyy-MM-dd'));
+  const getRecord = (empId, day) => records.find(r =>
+    r.employee_id === empId &&
+    String(r.date || '').substring(0, 10) === format(day, 'yyyy-MM-dd')
+  );
 
   const filteredEmployees = selectedEmployee === 'all' ? employees.filter(e => e.status === 'Activo') : employees.filter(e => e.id === selectedEmployee);
 
   const weekStats = {
     total: records.filter(r => {
-      const d = parseISO(r.date);
+      const d = parseISO(String(r.date || '').substring(0, 10));
       return d >= weekStart && d <= weekEnd;
     }).length,
-    asistencia: records.filter(r => { const d = parseISO(r.date); return d >= weekStart && d <= weekEnd && r.status === 'Asistencia'; }).length,
-    retardos: records.filter(r => { const d = parseISO(r.date); return d >= weekStart && d <= weekEnd && r.status === 'Retardo'; }).length,
-    faltas: records.filter(r => { const d = parseISO(r.date); return d >= weekStart && d <= weekEnd && r.status === 'Falta'; }).length,
+    asistencia: records.filter(r => { const d = parseISO(String(r.date || '').substring(0, 10)); return d >= weekStart && d <= weekEnd && r.status === 'Asistencia'; }).length,
+    retardos:   records.filter(r => { const d = parseISO(String(r.date || '').substring(0, 10)); return d >= weekStart && d <= weekEnd && r.status === 'Retardo'; }).length,
+    faltas:     records.filter(r => { const d = parseISO(String(r.date || '').substring(0, 10)); return d >= weekStart && d <= weekEnd && r.status === 'Falta'; }).length,
   };
 
   return (

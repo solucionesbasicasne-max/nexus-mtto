@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import PageHeader from '@/components/shared/PageHeader';
 import KPICard from '@/components/shared/KPICard';
-import { AlertTriangle, ArrowUpCircle, ArrowDownCircle, SlidersHorizontal, Package, TrendingDown, DollarSign, Plus, Search, Filter } from 'lucide-react';
+import { AlertTriangle, ArrowUpCircle, ArrowDownCircle, SlidersHorizontal, Package, TrendingDown, DollarSign, Plus, Search, Filter, Pencil, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -27,6 +27,42 @@ export default function Inventory() {
   const [search, setSearch] = useState('');
   const [alertFilter, setAlertFilter] = useState('all');
   const queryClient = useQueryClient();
+
+  const [showPartForm, setShowPartForm] = useState(false);
+  const [editingPart, setEditingPart] = useState(null);
+  const [partForm, setPartForm] = useState({ part_number: '', name: '', component_id: '', stock_current: 0, stock_min: 0, stock_max: 0, unit: 'Pieza', unit_cost: 0, location_storage: '', supplier: '', description: '' });
+
+  const openNewPart = () => {
+    setEditingPart(null);
+    setPartForm({ part_number: '', name: '', component_id: '', stock_current: 0, stock_min: 0, stock_max: 0, unit: 'Pieza', unit_cost: 0, location_storage: '', supplier: '', description: '' });
+    setShowPartForm(true);
+  };
+
+  const openEditPart = (part) => {
+    setEditingPart(part);
+    setPartForm({ ...part });
+    setShowPartForm(true);
+  };
+
+  const savePartMutation = useMutation({
+    mutationFn: (data) => editingPart ? base44.entities.SparePart.update(editingPart.id, data) : base44.entities.SparePart.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spareParts'] });
+      setShowPartForm(false);
+      setEditingPart(null);
+      toast.success(editingPart ? 'Refacción actualizada' : 'Refacción creada');
+    },
+    onError: (e) => toast.error(e.message)
+  });
+
+  const deletePartMutation = useMutation({
+    mutationFn: (id) => base44.entities.SparePart.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spareParts'] });
+      toast.success('Refacción eliminada');
+    },
+    onError: (e) => toast.error(e.message)
+  });
 
   // Get pre-selected part from URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -123,7 +159,13 @@ export default function Inventory() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Inventario de Refacciones" subtitle="Control de stock, entradas y salidas" />
+      <PageHeader
+        title="Inventario de Refacciones"
+        subtitle="Control de stock, entradas y salidas"
+        action={openNewPart}
+        actionLabel="Nueva Refacción"
+        actionIcon={Plus}
+      />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -204,14 +246,20 @@ export default function Inventory() {
                         <TableCell className="text-xs text-muted-foreground">{part.location_storage || '—'}</TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 text-emerald-700 border-emerald-200 hover:bg-emerald-50" onClick={() => openMovement(part, 'Entrada')}>
-                              <ArrowUpCircle className="w-3 h-3" />E
+                            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 text-emerald-700 border-emerald-200 hover:bg-emerald-50" onClick={() => openMovement(part, 'Entrada')} title="Registrar Entrada">
+                              <ArrowUpCircle className="w-3.5 h-3.5" />E
                             </Button>
-                            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 text-red-600 border-red-200 hover:bg-red-50" onClick={() => openMovement(part, 'Salida')}>
-                              <ArrowDownCircle className="w-3 h-3" />S
+                            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 text-red-600 border-red-200 hover:bg-red-50" onClick={() => openMovement(part, 'Salida')} title="Registrar Salida">
+                              <ArrowDownCircle className="w-3.5 h-3.5" />S
                             </Button>
-                            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => openMovement(part, 'Ajuste')}>
-                              <SlidersHorizontal className="w-3 h-3" />
+                            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => openMovement(part, 'Ajuste')} title="Ajuste de Stock">
+                              <SlidersHorizontal className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => openEditPart(part)} title="Editar Refacción">
+                              <Pencil className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-red-50" onClick={() => { if (confirm('¿Eliminar esta refacción?')) deletePartMutation.mutate(part.id); }} title="Eliminar Refacción">
+                              <Trash2 className="w-3.5 h-3.5" />
                             </Button>
                           </div>
                         </TableCell>
@@ -358,6 +406,72 @@ export default function Inventory() {
                 className={movementType === 'Entrada' ? 'bg-emerald-600 hover:bg-emerald-700' : movementType === 'Salida' ? 'bg-red-600 hover:bg-red-700' : ''}>
                 {movementMutation.isPending ? 'Guardando...' : `Registrar ${movementType}`}
               </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+      {/* Spare Part Form Dialog */}
+      <Dialog open={showPartForm} onOpenChange={setShowPartForm}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>{editingPart ? 'Editar Refacción' : 'Nueva Refacción'}</DialogTitle></DialogHeader>
+          <form onSubmit={e => { e.preventDefault(); savePartMutation.mutate(partForm); }} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>No. Parte *</Label>
+                <Input value={partForm.part_number || ''} onChange={e => setPartForm({...partForm, part_number: e.target.value})} required placeholder="Ej: REF-1001" />
+              </div>
+              <div>
+                <Label>Nombre de la Refacción *</Label>
+                <Input value={partForm.name || ''} onChange={e => setPartForm({...partForm, name: e.target.value})} required placeholder="Ej: Filtro de aire" />
+              </div>
+              <div>
+                <Label>Componente</Label>
+                <Select value={partForm.component_id || ''} onValueChange={v => setPartForm({...partForm, component_id: v})}>
+                  <SelectTrigger><SelectValue placeholder="Seleccionar componente (opcional)" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={null}>Ninguno</SelectItem>
+                    {components.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Unidad *</Label>
+                <Input value={partForm.unit || ''} onChange={e => setPartForm({...partForm, unit: e.target.value})} required placeholder="Ej: Pieza, Litro, Juego" />
+              </div>
+              <div>
+                <Label>Stock Inicial *</Label>
+                <Input type="number" min="0" value={partForm.stock_current ?? 0} onChange={e => setPartForm({...partForm, stock_current: parseFloat(e.target.value) || 0})} required disabled={!!editingPart} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label>Stock Mínimo</Label>
+                  <Input type="number" min="0" value={partForm.stock_min ?? 0} onChange={e => setPartForm({...partForm, stock_min: parseFloat(e.target.value) || 0})} />
+                </div>
+                <div>
+                  <Label>Stock Máximo</Label>
+                  <Input type="number" min="0" value={partForm.stock_max ?? 0} onChange={e => setPartForm({...partForm, stock_max: parseFloat(e.target.value) || 0})} />
+                </div>
+              </div>
+              <div>
+                <Label>Costo Unitario ($) *</Label>
+                <Input type="number" min="0" step="0.01" value={partForm.unit_cost ?? 0} onChange={e => setPartForm({...partForm, unit_cost: parseFloat(e.target.value) || 0})} required />
+              </div>
+              <div>
+                <Label>Proveedor</Label>
+                <Input value={partForm.supplier || ''} onChange={e => setPartForm({...partForm, supplier: e.target.value})} placeholder="Ej: Distribuidora Industrial" />
+              </div>
+              <div>
+                <Label>Ubicación Almacén</Label>
+                <Input value={partForm.location_storage || ''} onChange={e => setPartForm({...partForm, location_storage: e.target.value})} placeholder="Ej: Estante A-2" />
+              </div>
+              <div className="col-span-2">
+                <Label>Descripción / Especificaciones</Label>
+                <Textarea value={partForm.description || ''} onChange={e => setPartForm({...partForm, description: e.target.value})} rows={2} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={() => setShowPartForm(false)}>Cancelar</Button>
+              <Button type="submit" disabled={savePartMutation.isPending}>Guardar</Button>
             </div>
           </form>
         </DialogContent>

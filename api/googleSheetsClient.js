@@ -174,6 +174,13 @@ function createEntityClient(entityName) {
     },
 
     /**
+     * Crea múltiples registros en una sola llamada
+     */
+    bulkCreate: async (items) => {
+      return apiFetch(`entities/${entityName}`, 'bulkCreate', {}, { items });
+    },
+
+    /**
      * Actualiza un registro existente
      */
     update: async (id, data) => {

@@ -24,6 +24,10 @@ export default function PlanDetail() {
   const { data: services = [] } = useQuery({ queryKey: ['planServices', planId], queryFn: () => base44.entities.PlanResourceService.filter({ plan_id: planId }) });
   const { data: parts = [] } = useQuery({ queryKey: ['planParts', planId], queryFn: () => base44.entities.PlanResourcePart.filter({ plan_id: planId }) });
 
+  const { data: specialties = [] } = useQuery({ queryKey: ['specialties'], queryFn: () => base44.entities.Specialty.list() });
+  const { data: registeredServices = [] } = useQuery({ queryKey: ['servicesList'], queryFn: () => base44.entities.Service.list() });
+  const { data: spareParts = [] } = useQuery({ queryKey: ['sparePartsList'], queryFn: () => base44.entities.SparePart.list() });
+
   const [dialog, setDialog] = useState({ open: false, type: '', form: {} });
   const [generatingAI, setGeneratingAI] = useState(false);
 
@@ -120,9 +124,9 @@ Responde SOLO con un JSON con esta estructura:
   const openDialog = (type) => {
     const defaults = {
       activity: { sequence: activities.length + 1, description: '', estimated_time_minutes: 30, activity_type: 'Inspección' },
-      labor: { technician_type: '', quantity: 1, estimated_time_hours: 1 },
+      labor: { technician_type: '', quantity: 1, estimated_time_hours: 1, hourly_rate: 0, estimated_cost: 0 },
       service: { external_service: '', supplier: '', estimated_cost: 0 },
-      part: { part_name: '', quantity: 1, unit: 'Pieza', estimated_cost: 0 },
+      part: { part_name: '', quantity: 1, unit: 'Pieza', estimated_cost: 0, unit_cost: 0 },
     };
     setDialog({ open: true, type, form: defaults[type] });
   };
@@ -185,7 +189,14 @@ Responde SOLO con un JSON con esta estructura:
           <CardContent className="space-y-2">
             {labor.map(l => (
               <div key={l.id} className="flex justify-between items-center text-sm p-2 bg-muted/30 rounded">
-                <div><p className="font-medium">{l.technician_type}</p><p className="text-xs text-muted-foreground">{l.quantity} pers. · {l.estimated_time_hours}h</p></div>
+                <div>
+                  <p className="font-medium">{l.technician_type}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {l.quantity} pers. · {l.estimated_time_hours}h
+                    {l.hourly_rate > 0 && ` · $${l.hourly_rate}/h`}
+                    {l.estimated_cost > 0 && ` · Total: $${l.estimated_cost}`}
+                  </p>
+                </div>
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteMutation.mutate({ type: 'labor', id: l.id })}><Trash2 className="w-3 h-3 text-destructive" /></Button>
               </div>
             ))}
@@ -252,23 +263,117 @@ Responde SOLO con un JSON con esta estructura:
               <div><Label>Tiempo Estimado (min)</Label><Input type="number" value={dialog.form.estimated_time_minutes || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, estimated_time_minutes: parseInt(e.target.value) } })} /></div>
             </>}
             {dialog.type === 'labor' && <>
-              <div><Label>Tipo de Técnico *</Label><Input value={dialog.form.technician_type || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, technician_type: e.target.value } })} required /></div>
+              <div>
+                <Label>Especialidad / Tipo de Técnico *</Label>
+                <Select value={dialog.form.technician_type || ''} onValueChange={v => {
+                  const spec = specialties.find(s => s.name === v || s.id === v);
+                  const rate = spec ? parseFloat(spec.hourly_rate || 0) : 0;
+                  const qty = parseInt(dialog.form.quantity || 1);
+                  const hours = parseFloat(dialog.form.estimated_time_hours || 1);
+                  setDialog({
+                    ...dialog,
+                    form: {
+                      ...dialog.form,
+                      technician_type: spec ? spec.name : v,
+                      hourly_rate: rate,
+                      estimated_cost: qty * hours * rate
+                    }
+                  });
+                }}>
+                  <SelectTrigger><SelectValue placeholder="Seleccionar especialidad" /></SelectTrigger>
+                  <SelectContent>
+                    {specialties.filter(s => s.is_active !== false).map(s => (
+                      <SelectItem key={s.id} value={s.name}>{s.name} {s.hourly_rate > 0 ? `($${s.hourly_rate}/h)` : ''}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Cantidad</Label><Input type="number" value={dialog.form.quantity || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, quantity: parseInt(e.target.value) } })} /></div>
-                <div><Label>Tiempo Est. (h)</Label><Input type="number" step="0.5" value={dialog.form.estimated_time_hours || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, estimated_time_hours: parseFloat(e.target.value) } })} /></div>
+                <div><Label>Cantidad</Label><Input type="number" value={dialog.form.quantity || ''} onChange={e => {
+                  const qty = parseInt(e.target.value) || 0;
+                  const hours = parseFloat(dialog.form.estimated_time_hours || 0);
+                  const rate = parseFloat(dialog.form.hourly_rate || 0);
+                  setDialog({ ...dialog, form: { ...dialog.form, quantity: qty, estimated_cost: qty * hours * rate } });
+                }} /></div>
+                <div><Label>Tiempo Est. (h)</Label><Input type="number" step="0.5" value={dialog.form.estimated_time_hours || ''} onChange={e => {
+                  const hours = parseFloat(e.target.value) || 0;
+                  const qty = parseInt(dialog.form.quantity || 0);
+                  const rate = parseFloat(dialog.form.hourly_rate || 0);
+                  setDialog({ ...dialog, form: { ...dialog.form, estimated_time_hours: hours, estimated_cost: qty * hours * rate } });
+                }} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Costo por Hora ($)</Label><Input type="number" min="0" step="0.01" value={dialog.form.hourly_rate || ''} onChange={e => {
+                  const rate = parseFloat(e.target.value) || 0;
+                  const qty = parseInt(dialog.form.quantity || 1);
+                  const hours = parseFloat(dialog.form.estimated_time_hours || 1);
+                  setDialog({ ...dialog, form: { ...dialog.form, hourly_rate: rate, estimated_cost: qty * hours * rate } });
+                }} /></div>
+                <div><Label>Costo Total Est. ($)</Label><Input type="number" min="0" step="0.01" value={dialog.form.estimated_cost || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, estimated_cost: parseFloat(e.target.value) || 0 } })} /></div>
               </div>
             </>}
             {dialog.type === 'service' && <>
+              <div>
+                <Label>Seleccionar Servicio Registrado</Label>
+                <Select value={dialog.form.external_service || ''} onValueChange={v => {
+                  const serv = registeredServices.find(s => s.name === v || s.id === v);
+                  setDialog({
+                    ...dialog,
+                    form: {
+                      ...dialog.form,
+                      external_service: serv ? serv.name : v,
+                      supplier: serv ? serv.provider : (dialog.form.supplier || ''),
+                      estimated_cost: serv ? parseFloat(serv.estimated_cost || 0) : (dialog.form.estimated_cost || 0)
+                    }
+                  });
+                }}>
+                  <SelectTrigger><SelectValue placeholder="Seleccionar servicio de catálogo" /></SelectTrigger>
+                  <SelectContent>
+                    {registeredServices.map(s => (
+                      <SelectItem key={s.id} value={s.name}>{s.name} — {s.provider} {s.estimated_cost > 0 ? `($${s.estimated_cost})` : ''}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div><Label>Servicio *</Label><Input value={dialog.form.external_service || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, external_service: e.target.value } })} required /></div>
               <div><Label>Proveedor</Label><Input value={dialog.form.supplier || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, supplier: e.target.value } })} /></div>
-              <div><Label>Costo Estimado</Label><Input type="number" step="0.01" value={dialog.form.estimated_cost || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, estimated_cost: parseFloat(e.target.value) } })} /></div>
+              <div><Label>Costo Estimado</Label><Input type="number" step="0.01" value={dialog.form.estimated_cost || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, estimated_cost: parseFloat(e.target.value) || 0 } })} /></div>
             </>}
             {dialog.type === 'part' && <>
+              <div>
+                <Label>Seleccionar Refacción Registrada</Label>
+                <Select value={dialog.form.part_name || ''} onValueChange={v => {
+                  const part = spareParts.find(p => p.name === v || p.id === v);
+                  const cost = part ? parseFloat(part.unit_cost || 0) : 0;
+                  const qty = parseInt(dialog.form.quantity || 1);
+                  setDialog({
+                    ...dialog,
+                    form: {
+                      ...dialog.form,
+                      part_name: part ? part.name : v,
+                      unit: part ? part.unit : (dialog.form.unit || 'Pieza'),
+                      unit_cost: cost,
+                      estimated_cost: qty * cost
+                    }
+                  });
+                }}>
+                  <SelectTrigger><SelectValue placeholder="Seleccionar refacción de catálogo" /></SelectTrigger>
+                  <SelectContent>
+                    {spareParts.map(p => (
+                      <SelectItem key={p.id} value={p.name}>{p.name} {p.part_number ? `(${p.part_number})` : ''} — Stock: {p.stock_current} {p.unit}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div><Label>Refacción *</Label><Input value={dialog.form.part_name || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, part_name: e.target.value } })} required /></div>
               <div className="grid grid-cols-3 gap-3">
-                <div><Label>Cantidad</Label><Input type="number" value={dialog.form.quantity || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, quantity: parseInt(e.target.value) } })} /></div>
+                <div><Label>Cantidad</Label><Input type="number" value={dialog.form.quantity || ''} onChange={e => {
+                  const qty = parseInt(e.target.value) || 0;
+                  const cost = parseFloat(dialog.form.unit_cost || 0);
+                  setDialog({ ...dialog, form: { ...dialog.form, quantity: qty, estimated_cost: qty * cost } });
+                }} /></div>
                 <div><Label>Unidad</Label><Input value={dialog.form.unit || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, unit: e.target.value } })} /></div>
-                <div><Label>Costo Est.</Label><Input type="number" step="0.01" value={dialog.form.estimated_cost || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, estimated_cost: parseFloat(e.target.value) } })} /></div>
+                <div><Label>Costo Est.</Label><Input type="number" step="0.01" value={dialog.form.estimated_cost || ''} onChange={e => setDialog({ ...dialog, form: { ...dialog.form, estimated_cost: parseFloat(e.target.value) || 0 } })} /></div>
               </div>
             </>}
             <div className="flex justify-end gap-2">

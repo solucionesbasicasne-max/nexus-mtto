@@ -41,6 +41,8 @@ export default function QRAttendanceScanner() {
   const [justificationStatus, setJustificationStatus] = useState('Justificada');
   const scannerRef = useRef(null);
   const qrCodeRef = useRef(null);
+  const lastScansRef = useRef({}); // Evita registros dobles (cooldown)
+  const handleScanRef = useRef(null);
   const queryClient = useQueryClient();
 
   const { data: employees = [] } = useQuery({ queryKey: ['employees'], queryFn: () => base44.entities.Employee.list() });
@@ -86,7 +88,11 @@ export default function QRAttendanceScanner() {
       await html5QrCode.start(
         cam.id,
         { fps: 10, qrbox: { width: 220, height: 220 } },
-        (decodedText) => handleScan(decodedText),
+        (decodedText) => {
+          if (handleScanRef.current) {
+            handleScanRef.current(decodedText);
+          }
+        },
         () => {}
       );
       setScannerReady(true);
@@ -110,12 +116,25 @@ export default function QRAttendanceScanner() {
   }, []);
 
   const handleScan = useCallback((text) => {
+    const nowTime = Date.now();
+    
     // QR contains employee_id
     const emp = employees.find(e => e.employee_id === text || e.id === text);
     if (!emp) {
+      // Cooldown de 3 segundos para errores de escaneo para evitar spam
+      const lastUnknown = lastScansRef.current[text];
+      if (lastUnknown && (nowTime - lastUnknown < 3000)) return;
+      lastScansRef.current[text] = nowTime;
       toast.error('QR no reconocido: ' + text);
       return;
     }
+
+    // Cooldown de 10 segundos por empleado para evitar duplicados
+    const lastScan = lastScansRef.current[emp.id];
+    if (lastScan && (nowTime - lastScan < 10000)) {
+      return;
+    }
+    lastScansRef.current[emp.id] = nowTime;
 
     const todayStr = format(new Date(), 'yyyy-MM-dd');
     const nowStr = format(new Date(), 'HH:mm');
@@ -172,9 +191,9 @@ export default function QRAttendanceScanner() {
     setLastResult({ employee: emp, status: 'checkin', attendanceStatus: status, time: nowStr });
   }, [employees, shifts, todayRecords, createRecord, updateRecord]);
 
-  // Reload employees/shifts/records into handler when they change
+  // Mantener la referencia al callback actualizado para evitar closures obsoletos en html5-qrcode
   useEffect(() => {
-    // The handleScan closure uses latest values via the deps above
+    handleScanRef.current = handleScan;
   }, [handleScan]);
 
   const confirmJustification = () => {
